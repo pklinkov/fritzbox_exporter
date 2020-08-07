@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 	"log"
+       "strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
 
@@ -283,10 +284,15 @@ func (fc *FritzboxCollector) Collect(ch chan<- prometheus.Metric) {
 				floatval = 0
 			}
 		case string:
-			if tval == m.OkValue {
-				floatval = 1
+                       if s, err := strconv.ParseInt(tval, 10, 64); err == nil {
+                               fmt.Printf("%T, %v\n", s, s)
+                               floatval = float64(s)
 			} else {
-				floatval = 0
+                               if tval == m.OkValue {
+                                       floatval = 1
+                               } else {
+                                       floatval = 0
+                               }
 			}
 		default:
 			fmt.Println("unknown", val)
